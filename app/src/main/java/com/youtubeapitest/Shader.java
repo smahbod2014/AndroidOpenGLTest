@@ -9,11 +9,11 @@ import static android.opengl.GLES20.*;
 public class Shader {
 
     private static final String vertexShader =
-            "uniform mat4 u_VPMatrix;      \n"     // A constant representing the combined model/view/projection matrix.
-        +   "uniform mat4 u_ModelMatrix;      \n"     // A constant representing the combined model/view/projection matrix.
-
-                    + "attribute vec4 a_Position;     \n"     // Per-vertex position information we will pass in.
+            "attribute vec4 a_Position;     \n"     // Per-vertex position information we will pass in.
                     + "attribute vec4 a_Color;        \n"     // Per-vertex color information we will pass in.
+                    +   "uniform mat4 u_VPMatrix;      \n"     // A constant representing the combined model/view/projection matrix.
+                    +   "uniform mat4 u_ModelMatrix;      \n"     // A constant representing the combined model/view/projection matrix.
+
 
                     + "varying vec4 v_Color;          \n"     // This will be passed into the fragment shader.
 
@@ -21,9 +21,7 @@ public class Shader {
                     + "{                              \n"
                     + "   v_Color = a_Color;          \n"     // Pass the color through to the fragment shader.
                     // It will be interpolated across the triangle.
-                    + "   gl_Position = u_VPMatrix    \n"     // gl_Position is a special variable used to store the final position.
-                    + "               * u_ModelMatrix;\n"     // Multiply the vertex by the matrix to get the final point in
-                    + "               * a_Position;   \n"     // Multiply the vertex by the matrix to get the final point in
+                    + "   gl_Position = u_VPMatrix * u_ModelMatrix * a_Position;\n"     // gl_Position is a special variable used to store the final position.
                     + "}                              \n";    // normalized screen coordinates.
 
     private static final String fragmentShader =
@@ -36,9 +34,9 @@ public class Shader {
                     + "   gl_FragColor = v_Color;     \n"     // Pass the color directly through the pipeline.
                     + "}                              \n";
 
-    private static int currentProgram;
+    private static int currentProgram = -1;
     private int program;
-    private HashMap<String, Integer> uniforms = new HashMap<>()
+    private HashMap<String, Integer> uniforms = new HashMap<>();
 
     public Shader(String vertexSource, String fragmentSource) {
         int vertex = setupShader(GL_VERTEX_SHADER, vertexSource);
@@ -81,7 +79,7 @@ public class Shader {
 
     private int createProgram(int vertexShaderHandle, int fragmentShaderHandle) {
         int programHandle = glCreateProgram();
-        if (programHandle == 0) {
+        if (programHandle != 0) {
             glAttachShader(programHandle, vertexShaderHandle);
             glAttachShader(programHandle, fragmentShaderHandle);
             glBindAttribLocation(programHandle, 0, "a_Position");
@@ -122,5 +120,20 @@ public class Shader {
             currentProgram = program;
             glUseProgram(program);
         }
+    }
+
+    private int findUniform(String uniformName) {
+        if (uniforms.containsKey(uniformName)) {
+            return uniforms.get(uniformName);
+        }
+
+        int location = glGetUniformLocation(program, uniformName);
+        uniforms.put(uniformName, location);
+        Log.d("OpenGL Test", "Caching uniform " + uniformName + " at location " + location);
+        return location;
+    }
+
+    public void setUniformMatrix(String uniformName, float[] matrix) {
+        glUniformMatrix4fv(findUniform(uniformName), 1, false, matrix, 0);
     }
 }

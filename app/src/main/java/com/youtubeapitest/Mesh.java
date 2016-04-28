@@ -12,6 +12,7 @@ public class Mesh {
     //public int vao;
     public int vbo;
     public int ibo;
+    public int numIndices;
 
     public Mesh(float[] vertices, float[] colors, int[] indices) {
         float[] interleaved = interleaveArrays(vertices, 3, colors, 4);
@@ -27,6 +28,7 @@ public class Mesh {
 
         vbo = vbotemp[0];
         ibo = ibotemp[0];
+        numIndices = indices.length;
     }
 
     private FloatBuffer vertexDataToBuffer(float[] data) {
@@ -47,13 +49,16 @@ public class Mesh {
         float[] result = new float[a.length + b.length];
         int i = 0, j = 0, k = 0;
         while (i < result.length) {
-            for (int c = 0; c < numElemsA; c++, j++) {
+            for (int c = 0; c < numElemsA; c++) {
                 result[i++] = a[j + c];
             }
 
-            for (int c = 0; c < numElemsB; c++, k++) {
+            for (int c = 0; c < numElemsB; c++) {
                 result[i++] = b[k + c];
             }
+
+            j += numElemsA;
+            k += numElemsB;
         }
 
         return result;

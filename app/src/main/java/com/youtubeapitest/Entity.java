@@ -5,7 +5,7 @@ import android.opengl.Matrix;
 public class Entity {
 
     public Mesh mesh;
-    public float[] transformation;
+    public float[] transformation = new float[16];
 
     public Entity(Mesh mesh) {
         this.mesh = mesh;
