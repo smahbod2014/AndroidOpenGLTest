@@ -2,6 +2,9 @@ package com.youtubeapitest;
 
 import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 
 import static android.opengl.GLES20.*;
@@ -39,13 +42,39 @@ public class Shader {
     private HashMap<String, Integer> uniforms = new HashMap<>();
 
     public Shader(String vertexSource, String fragmentSource) {
-        int vertex = setupShader(GL_VERTEX_SHADER, vertexSource);
-        int fragment = setupShader(GL_FRAGMENT_SHADER, fragmentSource);
-        program = createProgram(vertex, fragment);
+        setup(vertexSource, fragmentSource);
+    }
+
+    public Shader(String vertexFile, String fragmentFile, boolean isFromFile) {
+        this(readFromFile(vertexFile), readFromFile(fragmentFile));
     }
 
     public static Shader createDefaultShader() {
         return new Shader(vertexShader, fragmentShader);
+    }
+
+    private static String readFromFile(String path) {
+        StringBuilder contents = new StringBuilder();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(path));
+            String line;
+            while ((line = br.readLine()) != null) {
+                contents.append(line);
+                contents.append("\n");
+            }
+            br.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return contents.toString();
+    }
+
+    private void setup(String vertexSource, String fragmentSource) {
+        int vertex = setupShader(GL_VERTEX_SHADER, vertexSource);
+        int fragment = setupShader(GL_FRAGMENT_SHADER, fragmentSource);
+        program = createProgram(vertex, fragment);
     }
 
     private int setupShader(int shaderEnum, String source) {

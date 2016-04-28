@@ -27,7 +27,7 @@ public class MyRenderer implements GLSurfaceView.Renderer {
     public MyRenderer() {}
 
     private void init() {
-        float[] vertices = {
+        /*float[] vertices = {
                 -.5f, -.5f, 0,
                 .5f, -.5f, 0,
                 .5f, .5f, 0,
@@ -46,11 +46,15 @@ public class MyRenderer implements GLSurfaceView.Renderer {
                 0, 2, 3
         };
 
-        Mesh square = new Mesh(vertices, colors, indices);
-        shader = Shader.createDefaultShader();
+        Mesh square = new Mesh(vertices, colors, indices);*/
+
+        Mesh cube = Mesh.createCube(2.0f);
+
+        //shader = Shader.createDefaultShader();
+        shader = new Shader("Shaders/PlainVertexShader.txt", "Shaders/PlainFragmentShader.txt");
         shader.bind();
 
-        Entity e1 = new Entity(square);
+        Entity e1 = new Entity(cube);
         entities.add(e1);
     }
 
@@ -78,7 +82,7 @@ public class MyRenderer implements GLSurfaceView.Renderer {
         glEnableVertexAttribArray(1);
 
         glVertexAttribPointer(0, POSITION_SIZE, GL_FLOAT, false, BYTES_PER_FLOAT * VERTEX_SIZE, 0);
-        glVertexAttribPointer(1, COLOR_SIZE, GL_FLOAT, false, BYTES_PER_FLOAT * VERTEX_SIZE, 0);
+        glVertexAttribPointer(1, COLOR_SIZE, GL_FLOAT, false, BYTES_PER_FLOAT * VERTEX_SIZE, 12);
     }
 
     @Override
@@ -120,6 +124,6 @@ public class MyRenderer implements GLSurfaceView.Renderer {
 
     private void update(float dt) {
         Entity e = entities.get(0);
-        e.rotate(0, 0, 1, 45 * dt);
+        e.rotate(0, 1, 1, 45 * dt);
     }
 }

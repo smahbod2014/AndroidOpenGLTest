@@ -63,4 +63,61 @@ public class Mesh {
 
         return result;
     }
+
+    public static Mesh createCube(float length) {
+        float half = length / 2;
+        float[] vertices = {
+                //0 bot left
+                -half, -half, half,
+
+                //1 bot right
+                half, -half, half,
+
+                //2 top left
+                -half, half, half,
+
+                //3 top right
+                half, half, half,
+
+                //4 back bot left
+                -half, -half, -half,
+
+                //5 back bot right
+                half, -half, -half,
+
+                //6 back top left
+                -half, half, -half,
+
+                //7 back top right
+                half, half, -half,
+        };
+
+        int[] indices = {
+                //front
+                0, 1, 3, 0, 1, 2,
+                //back
+                5, 4, 6, 5, 4, 7,
+                //left
+                4, 0, 2, 4, 0, 6,
+                //right
+                1, 5, 6, 1, 5, 3,
+                //bottom
+                4, 5, 1, 4, 5, 2,
+                //top
+                2, 3, 7, 2, 3, 6
+        };
+
+        float[] colors = {
+                1, 0, 0, 1,
+                0, 1, 0, 1,
+                0, 0, 1, 1,
+                1, 1, 0, 1,
+                0, 1, 1, 1,
+                1, 0, 1, 1,
+                1, 1, 1, 1,
+                0, 0.5f, 0.5f, 1
+        };
+
+        return new Mesh(vertices, colors, indices);
+    }
 }
